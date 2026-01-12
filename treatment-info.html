@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F8FAFB">
+  <title>치료 정보 - 내 치아 상태 정리하기</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .page-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* 치료 선택 탭 */
+    .treatment-tabs {
+      display: flex;
+      gap: var(--spacing-xs);
+      overflow-x: auto;
+      padding-bottom: var(--spacing-sm);
+      margin-bottom: var(--spacing-lg);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .treatment-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .treatment-tab {
+      flex-shrink: 0;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-light);
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .treatment-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* 치료 정보 카드 */
+    .treatment-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .treatment-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: var(--spacing-lg);
+    }
+
+    .treatment-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .treatment-desc {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    .treatment-body {
+      padding: var(--spacing-lg);
+    }
+
+    /* 기본 정보 */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .info-item {
+      background: var(--bg-section);
+      border-radius: var(--border-radius-sm);
+      padding: var(--spacing-md);
+      text-align: center;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* 치료 단계 */
+    .steps-section {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .step-card {
+      display: flex;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      background: var(--bg-section);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 통증 레벨 */
+    .pain-level {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: var(--spacing-xs);
+    }
+
+    .pain-label {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-right: 4px;
+    }
+
+    .pain-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-light);
+    }
+
+    .pain-dot.filled {
+      background: var(--warning);
+    }
+
+    /* 팁 섹션 */
+    .tips-section {
+      background: rgba(74, 144, 164, 0.08);
+      border-radius: var(--border-radius-sm);
+      padding: var(--spacing-md);
+    }
+
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .tip-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tip-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .tip-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* FAQ 섹션 */
+    .faq-section {
+      margin-top: var(--spacing-xl);
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: var(--spacing-md);
+      background: none;
+      border: none;
+      text-align: left;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .faq-question svg {
+      transition: transform var(--transition-fast);
+    }
+
+    .faq-item.open .faq-question svg {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--transition-normal);
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+    }
+
+    .faq-answer-content {
+      padding: 0 var(--spacing-md) var(--spacing-md);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 헤더 -->
+    <header class="header">
+      <button class="header-back" onclick="history.back()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <span class="header-title">치료 정보</span>
+      <div class="header-spacer"></div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+      <!-- 페이지 헤더 -->
+      <section class="page-header fade-in">
+        <h1 class="page-title">치료 과정 알아보기</h1>
+        <p class="page-desc">궁금한 치료를 선택해서 미리 알아보세요</p>
+      </section>
+
+      <!-- 치료 선택 탭 -->
+      <div class="treatment-tabs fade-in delay-1" id="treatmentTabs">
+        <button class="treatment-tab active" data-treatment="scaling">스케일링</button>
+        <button class="treatment-tab" data-treatment="filling">충치 치료</button>
+        <button class="treatment-tab" data-treatment="rootCanal">신경치료</button>
+        <button class="treatment-tab" data-treatment="extraction">발치</button>
+        <button class="treatment-tab" data-treatment="implant">임플란트</button>
+      </div>
+
+      <!-- 치료 정보 카드 -->
+      <section class="treatment-card fade-in delay-2" id="treatmentCard">
+        <!-- 동적 생성 -->
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq-section fade-in delay-3">
+        <h3 class="section-title">💬 자주 묻는 질문</h3>
+        <div id="faqList">
+          <!-- 동적 생성 -->
+        </div>
+      </section>
+
+      <!-- 고지사항 -->
+      <div class="disclaimer">
+        <p class="disclaimer-text">
+          ⚠️ 본 정보는 일반적인 치료 과정 안내입니다.<br>
+          개인 상태에 따라 치료 방법이 다를 수 있으며,<br>
+          자세한 내용은 담당 치과의사와 상담하세요.
+        </p>
+      </div>
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>홈</span>
+      </a>
+      <a href="diagnosis.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>증상체크</span>
+      </a>
+      <a href="tooth-map.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+        <span>치아맵</span>
+      </a>
+      <a href="records.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>기록</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // FAQ 데이터
+    const faqData = {
+      scaling: [
+        { q: '스케일링은 아픈가요?', a: '대부분 가벼운 시림 정도만 느끼며, 통증은 거의 없습니다. 잇몸 상태에 따라 약간의 출혈이 있을 수 있지만 금방 멈춥니다.' },
+        { q: '얼마나 자주 받아야 하나요?', a: '일반적으로 6개월~1년에 한 번 받는 것을 권장합니다. 잇몸 상태에 따라 더 자주 받아야 할 수도 있습니다.' },
+        { q: '스케일링 후 주의사항은?', a: '시술 직후 몇 시간은 뜨겁거나 차가운 음식을 피하고, 당일은 음주와 흡연을 삼가는 것이 좋습니다.' }
+      ],
+      filling: [
+        { q: '마취가 아픈가요?', a: '바늘이 들어갈 때 약간 따끔할 수 있지만, 마취 후에는 치료 중 통증을 느끼지 못합니다.' },
+        { q: '레진은 얼마나 가나요?', a: '관리에 따라 다르지만, 일반적으로 5~10년 정도 사용 가능합니다. 정기 검진으로 상태를 확인하세요.' },
+        { q: '치료 당일 음식 먹어도 되나요?', a: '마취가 풀린 후 2시간 정도 지나면 음식을 먹을 수 있습니다. 당일은 딱딱한 음식은 피해주세요.' }
+      ],
+      rootCanal: [
+        { q: '신경치료가 많이 아픈가요?', a: '마취를 하기 때문에 치료 중에는 통증이 없습니다. 치료 후 1~2일 약간 욱신거릴 수 있으나 진통제로 조절 가능합니다.' },
+        { q: '왜 여러 번 방문해야 하나요?', a: '근관 내부를 깨끗이 소독하고 충분히 건조시켜야 하기 때문입니다. 꼼꼼한 치료가 오래가는 결과를 만듭니다.' },
+        { q: '신경치료 후 크라운을 꼭 해야 하나요?', a: '신경치료 후 치아가 약해지기 때문에 크라운으로 보호하는 것을 강력히 권장합니다.' }
+      ],
+      extraction: [
+        { q: '발치가 많이 아픈가요?', a: '충분한 마취를 하므로 뽑는 동안은 압력감만 느껴집니다. 마취가 풀린 후 통증이 있을 수 있으나 처방약으로 조절됩니다.' },
+        { q: '발치 후 얼마나 붓나요?', a: '사람마다 다르지만 2~3일 정도 붓기가 있을 수 있습니다. 냉찜질이 도움됩니다.' },
+        { q: '식사는 언제부터 가능한가요?', a: '마취가 풀린 후 부드러운 음식부터 시작하세요. 발치 부위 반대쪽으로 씹고, 뜨거운 음식은 피해주세요.' }
+      ],
+      implant: [
+        { q: '임플란트 수술이 많이 아픈가요?', a: '수술 중에는 마취로 통증이 없고, 수술 후 며칠간 약간의 불편함이 있을 수 있습니다. 대부분 처방약으로 잘 조절됩니다.' },
+        { q: '임플란트 수명은 얼마나 되나요?', a: '관리를 잘하면 20년 이상 사용 가능합니다. 정기 검진과 올바른 구강 관리가 중요합니다.' },
+        { q: '수술 후 일상생활 가능한가요?', a: '간단한 일상생활은 가능하지만, 수술 당일은 무리한 활동을 피하고 충분히 휴식하세요.' }
+      ]
+    };
+
+    let currentTreatment = 'scaling';
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      // 탭 클릭 이벤트
+      document.querySelectorAll('.treatment-tab').forEach(tab => {
+        tab.addEventListener('click', () => selectTreatment(tab.dataset.treatment));
+      });
+
+      // 초기 렌더링
+      renderTreatment('scaling');
+    });
+
+    // 치료 선택
+    function selectTreatment(treatment) {
+      currentTreatment = treatment;
+
+      // 탭 활성화
+      document.querySelectorAll('.treatment-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.treatment === treatment);
+      });
+
+      // 정보 렌더링
+      renderTreatment(treatment);
+    }
+
+    // 치료 정보 렌더링
+    function renderTreatment(treatment) {
+      const info = treatmentInfo[treatment];
+      if (!info) return;
+
+      const card = document.getElementById('treatmentCard');
+
+      const stepsHtml = info.steps.map((step, i) => `
+        <div class="step-card">
+          <div class="step-number">${i + 1}</div>
+          <div class="step-content">
+            <div class="step-title">${step.title}</div>
+            <div class="step-desc">${step.description}</div>
+            <div class="pain-level">
+              <span class="pain-label">통증:</span>
+              ${Array(5).fill(0).map((_, j) => `
+                <div class="pain-dot ${j < step.pain ? 'filled' : ''}"></div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      const tipsHtml = info.tips.map(tip => `
+        <div class="tip-item">
+          <span class="tip-icon">💡</span>
+          <span class="tip-text">${tip}</span>
+        </div>
+      `).join('');
+
+      card.innerHTML = `
+        <div class="treatment-header">
+          <h2 class="treatment-name">${info.name}</h2>
+          <p class="treatment-desc">${info.description}</p>
+        </div>
+        <div class="treatment-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">소요 시간</div>
+              <div class="info-value">${info.duration}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">회복 기간</div>
+              <div class="info-value">${info.recovery}</div>
+            </div>
+          </div>
+
+          <div class="steps-section">
+            <h3 class="section-title">📋 치료 단계</h3>
+            ${stepsHtml}
+          </div>
+
+          <div class="tips-section">
+            <h3 class="section-title" style="margin-bottom: var(--spacing-md);">✨ 알아두면 좋은 팁</h3>
+            ${tipsHtml}
+          </div>
+        </div>
+      `;
+
+      // FAQ 렌더링
+      renderFaq(treatment);
+    }
+
+    // FAQ 렌더링
+    function renderFaq(treatment) {
+      const faqs = faqData[treatment] || [];
+      const container = document.getElementById('faqList');
+
+      container.innerHTML = faqs.map((faq, i) => `
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <button class="faq-question">
+            ${faq.q}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">${faq.a}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // FAQ 토글
+    function toggleFaq(element) {
+      element.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

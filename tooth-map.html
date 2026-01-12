@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F8FAFB">
+  <title>치아 맵 - 내 치아 상태 정리하기</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-intro {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-intro h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .page-intro p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .tooth-map-container {
+      background: var(--bg-card);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .jaw-section {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .jaw-label {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-bottom: var(--spacing-sm);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .teeth-row {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      margin-bottom: 3px;
+    }
+
+    .jaw-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+      margin: var(--spacing-md) 0;
+    }
+
+    .tooth {
+      width: 28px;
+      height: 34px;
+      border: 2px solid var(--border-light);
+      border-radius: 5px 5px 7px 7px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: var(--text-light);
+      position: relative;
+    }
+
+    .tooth:active {
+      transform: scale(1.1);
+    }
+
+    .tooth.selected {
+      border-color: var(--primary);
+      background: rgba(74, 144, 164, 0.15);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .tooth.has-symptom {
+      border-color: var(--warning);
+      background: rgba(232, 133, 110, 0.15);
+    }
+
+    .tooth-molar {
+      width: 34px;
+      height: 38px;
+      border-radius: 6px;
+    }
+
+    /* 선택된 치아 정보 */
+    .selected-tooth-info {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--spacing-md);
+      display: none;
+    }
+
+    .selected-tooth-info.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tooth-info-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .tooth-info-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .tooth-info-number {
+      background: var(--primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* 증상 태그 선택 */
+    .symptom-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-xs);
+      margin-top: var(--spacing-md);
+    }
+
+    .symptom-tag {
+      padding: 8px 14px;
+      background: var(--bg-section);
+      border: 2px solid transparent;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .symptom-tag:active,
+    .symptom-tag.selected {
+      border-color: var(--primary);
+      background: rgba(74, 144, 164, 0.1);
+      color: var(--primary);
+    }
+
+    /* 저장된 치아 목록 */
+    .saved-teeth-section {
+      margin-top: var(--spacing-xl);
+    }
+
+    .saved-teeth-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .saved-tooth-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius-sm);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+    }
+
+    .saved-tooth-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(232, 133, 110, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .saved-tooth-content {
+      flex: 1;
+    }
+
+    .saved-tooth-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .saved-tooth-symptoms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .saved-tooth-delete {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: var(--spacing-xs);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xl);
+      color: var(--text-light);
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 헤더 -->
+    <header class="header">
+      <button class="header-back" onclick="history.back()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <span class="header-title">치아 맵</span>
+      <div class="header-spacer"></div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+      <!-- 안내 -->
+      <section class="page-intro fade-in">
+        <h1>아픈 치아를 선택해주세요</h1>
+        <p>해당 위치를 터치하면 증상을 기록할 수 있어요</p>
+      </section>
+
+      <!-- 치아 맵 -->
+      <section class="tooth-map-container fade-in delay-1">
+        <!-- 상악 (위턱) -->
+        <div class="jaw-section">
+          <div class="jaw-label">위턱 (상악)</div>
+          <div class="teeth-row">
+            <!-- 오른쪽 (환자 기준 왼쪽) -->
+            <div class="tooth tooth-molar" data-tooth="18">18</div>
+            <div class="tooth tooth-molar" data-tooth="17">17</div>
+            <div class="tooth tooth-molar" data-tooth="16">16</div>
+            <div class="tooth" data-tooth="15">15</div>
+            <div class="tooth" data-tooth="14">14</div>
+            <div class="tooth" data-tooth="13">13</div>
+            <div class="tooth" data-tooth="12">12</div>
+            <div class="tooth" data-tooth="11">11</div>
+            <!-- 왼쪽 (환자 기준 오른쪽) -->
+            <div class="tooth" data-tooth="21">21</div>
+            <div class="tooth" data-tooth="22">22</div>
+            <div class="tooth" data-tooth="23">23</div>
+            <div class="tooth" data-tooth="24">24</div>
+            <div class="tooth" data-tooth="25">25</div>
+            <div class="tooth tooth-molar" data-tooth="26">26</div>
+            <div class="tooth tooth-molar" data-tooth="27">27</div>
+            <div class="tooth tooth-molar" data-tooth="28">28</div>
+          </div>
+        </div>
+
+        <div class="jaw-divider"></div>
+
+        <!-- 하악 (아래턱) -->
+        <div class="jaw-section">
+          <div class="jaw-label">아래턱 (하악)</div>
+          <div class="teeth-row">
+            <!-- 오른쪽 (환자 기준 왼쪽) -->
+            <div class="tooth tooth-molar" data-tooth="48">48</div>
+            <div class="tooth tooth-molar" data-tooth="47">47</div>
+            <div class="tooth tooth-molar" data-tooth="46">46</div>
+            <div class="tooth" data-tooth="45">45</div>
+            <div class="tooth" data-tooth="44">44</div>
+            <div class="tooth" data-tooth="43">43</div>
+            <div class="tooth" data-tooth="42">42</div>
+            <div class="tooth" data-tooth="41">41</div>
+            <!-- 왼쪽 (환자 기준 오른쪽) -->
+            <div class="tooth" data-tooth="31">31</div>
+            <div class="tooth" data-tooth="32">32</div>
+            <div class="tooth" data-tooth="33">33</div>
+            <div class="tooth" data-tooth="34">34</div>
+            <div class="tooth" data-tooth="35">35</div>
+            <div class="tooth tooth-molar" data-tooth="36">36</div>
+            <div class="tooth tooth-molar" data-tooth="37">37</div>
+            <div class="tooth tooth-molar" data-tooth="38">38</div>
+          </div>
+        </div>
+
+        <div class="text-sm text-center mt-md" style="color: var(--text-light);">
+          ← 오른쪽 | 왼쪽 →<br>
+          <span style="font-size: 0.75rem;">(거울을 보는 방향 기준)</span>
+        </div>
+      </section>
+
+      <!-- 선택된 치아 정보 -->
+      <section class="selected-tooth-info" id="selectedToothInfo">
+        <div class="tooth-info-header">
+          <span class="tooth-info-title" id="toothName">-</span>
+          <span class="tooth-info-number" id="toothNumber">-</span>
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">이 치아에 어떤 증상이 있나요?</p>
+        <div class="symptom-tags" id="symptomTags">
+          <button class="symptom-tag" data-symptom="cold">찬물 시림</button>
+          <button class="symptom-tag" data-symptom="hot">뜨거운 것 아픔</button>
+          <button class="symptom-tag" data-symptom="chewing">씹을 때 통증</button>
+          <button class="symptom-tag" data-symptom="rest">가만히 있어도 아픔</button>
+          <button class="symptom-tag" data-symptom="gum">잇몸 문제</button>
+          <button class="symptom-tag" data-symptom="color">변색</button>
+          <button class="symptom-tag" data-symptom="crack">금/깨짐</button>
+          <button class="symptom-tag" data-symptom="loose">흔들림</button>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" onclick="cancelToothSelection()" style="flex: 1;">취소</button>
+          <button class="btn btn-primary" onclick="saveToothSymptoms()" style="flex: 2;">저장하기</button>
+        </div>
+      </section>
+
+      <!-- 저장된 치아 목록 -->
+      <section class="saved-teeth-section fade-in delay-2">
+        <h3 class="saved-teeth-title">
+          📋 기록된 치아
+        </h3>
+        <div id="savedTeethList">
+          <div class="empty-state">
+            <div class="empty-state-icon">🦷</div>
+            <p>아직 기록된 치아가 없어요<br>위 맵에서 치아를 선택해보세요</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 고지사항 -->
+      <div class="disclaimer">
+        <p class="disclaimer-text">
+          ⚠️ 치아 번호는 FDI 국제 표기법을 따릅니다.<br>
+          치과 방문 시 증상 설명에 참고해주세요.
+        </p>
+      </div>
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>홈</span>
+      </a>
+      <a href="diagnosis.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>증상체크</span>
+      </a>
+      <a href="tooth-map.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+        <span>치아맵</span>
+      </a>
+      <a href="records.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>기록</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // 상태 관리
+    let selectedTooth = null;
+    let selectedSymptoms = [];
+    let savedTeeth = {};
+
+    // 증상 라벨
+    const symptomLabels = {
+      cold: '찬물 시림',
+      hot: '뜨거운 것 아픔',
+      chewing: '씹을 때 통증',
+      rest: '가만히 있어도 아픔',
+      gum: '잇몸 문제',
+      color: '변색',
+      crack: '금/깨짐',
+      loose: '흔들림'
+    };
+
+    // 치아 이름 가져오기
+    function getToothName(num) {
+      const number = parseInt(num);
+      const isUpper = number < 40;
+      const isRight = [1, 4].includes(Math.floor(number / 10));
+      const lastDigit = number % 10;
+
+      let type = '';
+      if (lastDigit === 8) type = '사랑니';
+      else if (lastDigit >= 6) type = '큰어금니';
+      else if (lastDigit >= 4) type = '작은어금니';
+      else if (lastDigit === 3) type = '송곳니';
+      else type = '앞니';
+
+      return `${isUpper ? '위' : '아래'} ${isRight ? '오른쪽' : '왼쪽'} ${type}`;
+    }
+
+    // 초기화
+    function init() {
+      // 저장된 데이터 불러오기
+      savedTeeth = utils.loadData(STORAGE_KEYS.TOOTH_MAP_DATA) || {};
+
+      // 치아 클릭 이벤트
+      document.querySelectorAll('.tooth').forEach(tooth => {
+        tooth.addEventListener('click', () => selectTooth(tooth));
+
+        // 저장된 치아 표시
+        const toothNum = tooth.dataset.tooth;
+        if (savedTeeth[toothNum]) {
+          tooth.classList.add('has-symptom');
+        }
+      });
+
+      // 증상 태그 클릭 이벤트
+      document.querySelectorAll('.symptom-tag').forEach(tag => {
+        tag.addEventListener('click', () => toggleSymptom(tag));
+      });
+
+      // 저장된 치아 목록 렌더링
+      renderSavedTeeth();
+    }
+
+    // 치아 선택
+    function selectTooth(toothEl) {
+      // 이전 선택 해제
+      document.querySelectorAll('.tooth.selected').forEach(t => t.classList.remove('selected'));
+
+      // 새로 선택
+      toothEl.classList.add('selected');
+      selectedTooth = toothEl.dataset.tooth;
+
+      // 정보 패널 표시
+      const infoPanel = document.getElementById('selectedToothInfo');
+      document.getElementById('toothName').textContent = getToothName(selectedTooth);
+      document.getElementById('toothNumber').textContent = `#${selectedTooth}`;
+
+      // 이전에 저장된 증상이 있으면 복원
+      selectedSymptoms = savedTeeth[selectedTooth] ? [...savedTeeth[selectedTooth]] : [];
+      updateSymptomTags();
+
+      infoPanel.classList.add('active');
+
+      // 스크롤
+      infoPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // 증상 토글
+    function toggleSymptom(tagEl) {
+      const symptom = tagEl.dataset.symptom;
+      const index = selectedSymptoms.indexOf(symptom);
+
+      if (index > -1) {
+        selectedSymptoms.splice(index, 1);
+        tagEl.classList.remove('selected');
+      } else {
+        selectedSymptoms.push(symptom);
+        tagEl.classList.add('selected');
+      }
+    }
+
+    // 증상 태그 UI 업데이트
+    function updateSymptomTags() {
+      document.querySelectorAll('.symptom-tag').forEach(tag => {
+        if (selectedSymptoms.includes(tag.dataset.symptom)) {
+          tag.classList.add('selected');
+        } else {
+          tag.classList.remove('selected');
+        }
+      });
+    }
+
+    // 선택 취소
+    function cancelToothSelection() {
+      document.querySelectorAll('.tooth.selected').forEach(t => t.classList.remove('selected'));
+      document.getElementById('selectedToothInfo').classList.remove('active');
+      selectedTooth = null;
+      selectedSymptoms = [];
+      updateSymptomTags();
+    }
+
+    // 치아 증상 저장
+    function saveToothSymptoms() {
+      if (!selectedTooth) return;
+
+      if (selectedSymptoms.length === 0) {
+        // 증상이 없으면 삭제
+        delete savedTeeth[selectedTooth];
+        document.querySelector(`[data-tooth="${selectedTooth}"]`).classList.remove('has-symptom');
+      } else {
+        // 저장
+        savedTeeth[selectedTooth] = selectedSymptoms;
+        document.querySelector(`[data-tooth="${selectedTooth}"]`).classList.add('has-symptom');
+      }
+
+      // 로컬 스토리지에 저장
+      utils.saveData(STORAGE_KEYS.TOOTH_MAP_DATA, savedTeeth);
+
+      // UI 업데이트
+      renderSavedTeeth();
+      cancelToothSelection();
+    }
+
+    // 저장된 치아 삭제
+    function deleteSavedTooth(toothNum) {
+      delete savedTeeth[toothNum];
+      document.querySelector(`[data-tooth="${toothNum}"]`)?.classList.remove('has-symptom');
+      utils.saveData(STORAGE_KEYS.TOOTH_MAP_DATA, savedTeeth);
+      renderSavedTeeth();
+    }
+
+    // 저장된 치아 목록 렌더링
+    function renderSavedTeeth() {
+      const container = document.getElementById('savedTeethList');
+      const entries = Object.entries(savedTeeth);
+
+      if (entries.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🦷</div>
+            <p>아직 기록된 치아가 없어요<br>위 맵에서 치아를 선택해보세요</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = entries.map(([toothNum, symptoms]) => `
+        <div class="saved-tooth-card">
+          <div class="saved-tooth-icon">🦷</div>
+          <div class="saved-tooth-content">
+            <div class="saved-tooth-name">${getToothName(toothNum)} (#${toothNum})</div>
+            <div class="saved-tooth-symptoms">
+              ${symptoms.map(s => `<span class="tag tag-warning">${symptomLabels[s]}</span>`).join('')}
+            </div>
+          </div>
+          <button class="saved-tooth-delete" onclick="deleteSavedTooth('${toothNum}')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

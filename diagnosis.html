@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F8FAFB">
+  <title>증상 체크 - 내 치아 상태 정리하기</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .question-container {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-header {
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .question-number {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .question-hint {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-top: var(--spacing-sm);
+    }
+
+    .options-container {
+      flex: 1;
+      margin: var(--spacing-lg) 0;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-sm);
+      border-radius: var(--border-radius);
+    }
+
+    .option-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--bg-section);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      transition: var(--transition-fast);
+    }
+
+    .option-btn.selected .option-icon {
+      background: rgba(74, 144, 164, 0.15);
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .option-desc {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .multi-select-hint {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .navigation-buttons {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-top: auto;
+      padding-top: var(--spacing-lg);
+    }
+
+    .btn-prev {
+      flex: 0 0 auto;
+      padding: var(--spacing-md);
+      width: 56px;
+    }
+
+    .btn-next {
+      flex: 1;
+    }
+
+    .btn-next:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* 슬라이드 애니메이션 */
+    .question-slide {
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .slide-out {
+      animation: slideOut 0.2s ease;
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 헤더 -->
+    <header class="header">
+      <button class="header-back" onclick="handleBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <span class="header-title">증상 체크</span>
+      <div class="header-spacer"></div>
+    </header>
+
+    <!-- 진행 바 -->
+    <div style="padding: 0 var(--spacing-lg);">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
+      </div>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+      <div class="question-container" id="questionContainer">
+        <!-- 질문이 동적으로 렌더링됩니다 -->
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // 질문 데이터
+    const questions = [
+      {
+        id: 'pain',
+        question: '통증이 있으신가요?',
+        hint: '현재 느끼는 통증 정도를 선택해주세요',
+        type: 'single',
+        options: [
+          { value: 'pain_none', label: '없어요', desc: '특별한 통증 없음', icon: '😊' },
+          { value: 'pain_sometimes', label: '가끔 아파요', desc: '때때로 불편함', icon: '😐' },
+          { value: 'pain_always', label: '계속 아파요', desc: '지속적인 통증', icon: '😣' }
+        ]
+      },
+      {
+        id: 'pain_when',
+        question: '언제 통증이 심해지나요?',
+        hint: '해당하는 것을 모두 선택해주세요',
+        type: 'multi',
+        condition: (answers) => answers.pain !== 'pain_none',
+        options: [
+          { value: 'pain_cold', label: '찬 것 먹을 때', desc: '찬물, 아이스크림 등', icon: '🧊' },
+          { value: 'pain_hot', label: '뜨거운 것 먹을 때', desc: '뜨거운 음료, 국물 등', icon: '🔥' },
+          { value: 'pain_chewing', label: '씹을 때', desc: '음식을 씹는 중', icon: '🍖' },
+          { value: 'pain_rest', label: '가만히 있어도', desc: '아무것도 안 해도 아픔', icon: '😔' }
+        ]
+      },
+      {
+        id: 'gum',
+        question: '잇몸 증상이 있으신가요?',
+        hint: '해당하는 것을 모두 선택해주세요',
+        type: 'multi',
+        options: [
+          { value: 'gum_bleeding', label: '피가 나요', desc: '양치할 때 출혈', icon: '🩸' },
+          { value: 'gum_swelling', label: '붓거나 아파요', desc: '잇몸이 부어오름', icon: '😫' },
+          { value: 'gum_smell', label: '냄새가 나요', desc: '구취가 느껴짐', icon: '💨' },
+          { value: 'gum_none', label: '없어요', desc: '잇몸은 괜찮음', icon: '👍' }
+        ]
+      },
+      {
+        id: 'visual',
+        question: '눈에 보이는 변화가 있나요?',
+        hint: '해당하는 것을 모두 선택해주세요',
+        type: 'multi',
+        options: [
+          { value: 'discoloration', label: '치아 변색', desc: '검은 점이나 얼룩', icon: '🔍' },
+          { value: 'hole_visible', label: '구멍이 보여요', desc: '치아에 구멍', icon: '🕳️' },
+          { value: 'loose_tooth', label: '치아가 흔들려요', desc: '움직임이 느껴짐', icon: '↔️' },
+          { value: 'visual_none', label: '없어요', desc: '특별한 변화 없음', icon: '✨' }
+        ]
+      },
+      {
+        id: 'duration',
+        question: '증상이 얼마나 됐나요?',
+        hint: '대략적인 기간을 선택해주세요',
+        type: 'single',
+        options: [
+          { value: 'duration_recent', label: '며칠 안 됐어요', desc: '1주일 이내', icon: '📅' },
+          { value: 'duration_weeks', label: '몇 주 됐어요', desc: '1~4주 정도', icon: '📆' },
+          { value: 'duration_months', label: '꽤 오래됐어요', desc: '한 달 이상', icon: '🗓️' }
+        ]
+      }
+    ];
+
+    // 상태 관리
+    let currentStep = 0;
+    let answers = {};
+
+    // 현재 보여야 할 질문 목록 계산
+    function getActiveQuestions() {
+      return questions.filter(q => {
+        if (!q.condition) return true;
+        return q.condition(answers);
+      });
+    }
+
+    // 질문 렌더링
+    function renderQuestion() {
+      const activeQuestions = getActiveQuestions();
+      const question = activeQuestions[currentStep];
+      const container = document.getElementById('questionContainer');
+      const progressFill = document.getElementById('progressFill');
+
+      // 진행률 업데이트
+      const progress = ((currentStep + 1) / activeQuestions.length) * 100;
+      progressFill.style.width = `${progress}%`;
+
+      // 이전 선택값 가져오기
+      const previousAnswer = answers[question.id];
+
+      let optionsHtml = question.options.map(opt => {
+        let isSelected = false;
+        if (question.type === 'multi') {
+          isSelected = previousAnswer && previousAnswer.includes(opt.value);
+        } else {
+          isSelected = previousAnswer === opt.value;
+        }
+
+        return `
+          <button class="option-btn ${isSelected ? 'selected' : ''}"
+                  data-value="${opt.value}"
+                  onclick="selectOption('${question.id}', '${opt.value}', '${question.type}')">
+            <div class="option-icon">${opt.icon}</div>
+            <div class="option-content">
+              <div class="option-title">${opt.label}</div>
+              <div class="option-desc">${opt.desc}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      const isLastStep = currentStep === activeQuestions.length - 1;
+      const canProceed = question.type === 'single' ?
+        !!answers[question.id] :
+        (answers[question.id] && answers[question.id].length > 0);
+
+      container.innerHTML = `
+        <div class="question-slide">
+          <div class="question-header">
+            <div class="question-number">질문 ${currentStep + 1} / ${activeQuestions.length}</div>
+            <h2 class="question-text">${question.question}</h2>
+            <p class="question-hint">${question.hint}</p>
+          </div>
+
+          ${question.type === 'multi' ? '<p class="multi-select-hint">여러 개 선택 가능</p>' : ''}
+
+          <div class="options-container">
+            ${optionsHtml}
+          </div>
+
+          <div class="navigation-buttons">
+            ${currentStep > 0 ? `
+              <button class="btn btn-secondary btn-prev" onclick="prevQuestion()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+            ` : ''}
+            <button class="btn btn-primary btn-next"
+                    onclick="${isLastStep ? 'submitDiagnosis()' : 'nextQuestion()'}"
+                    ${!canProceed ? 'disabled' : ''}>
+              ${isLastStep ? '결과 확인하기' : '다음'}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 옵션 선택
+    function selectOption(questionId, value, type) {
+      if (type === 'multi') {
+        if (!answers[questionId]) {
+          answers[questionId] = [];
+        }
+
+        const index = answers[questionId].indexOf(value);
+        if (index > -1) {
+          answers[questionId].splice(index, 1);
+        } else {
+          // gum_none이나 visual_none 선택 시 다른 것 해제
+          if (value.includes('_none')) {
+            answers[questionId] = [value];
+          } else {
+            // 다른 것 선택 시 none 해제
+            answers[questionId] = answers[questionId].filter(v => !v.includes('_none'));
+            answers[questionId].push(value);
+          }
+        }
+      } else {
+        answers[questionId] = value;
+      }
+
+      renderQuestion();
+    }
+
+    // 다음 질문
+    function nextQuestion() {
+      const activeQuestions = getActiveQuestions();
+      if (currentStep < activeQuestions.length - 1) {
+        currentStep++;
+        renderQuestion();
+      }
+    }
+
+    // 이전 질문
+    function prevQuestion() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderQuestion();
+      }
+    }
+
+    // 뒤로가기 처리
+    function handleBack() {
+      if (currentStep > 0) {
+        prevQuestion();
+      } else {
+        if (confirm('체크를 그만두시겠어요?\n입력한 내용은 저장되지 않습니다.')) {
+          window.location.href = 'index.html';
+        }
+      }
+    }
+
+    // 진단 제출
+    function submitDiagnosis() {
+      // 결과 계산
+      const result = diagnosisRules.calculateResult(answers);
+
+      // 저장
+      const diagnosisData = {
+        answers,
+        result,
+        date: new Date().toISOString()
+      };
+
+      utils.saveData(STORAGE_KEYS.CURRENT_DIAGNOSIS, diagnosisData);
+
+      // 결과 페이지로 이동
+      window.location.href = 'result.html';
+    }
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      // 이전 데이터 초기화
+      answers = {};
+      currentStep = 0;
+      renderQuestion();
+    });
+  </script>
+</body>
+</html>

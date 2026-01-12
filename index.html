@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F8FAFB">
+  <meta name="description" content="치과 방문 전 내 치아 상태를 정리해보세요">
+  <title>내 치아 상태 정리하기</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 메인 페이지 전용 스타일 */
+    .hero-section {
+      text-align: center;
+      padding: var(--spacing-xl) 0;
+    }
+
+    .hero-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto var(--spacing-lg);
+      background: linear-gradient(135deg, #E8F4F8, #D4EBF2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .hero-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .hero-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .empathy-section {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empathy-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .empathy-text strong {
+      color: var(--text-primary);
+    }
+
+    .cta-section {
+      margin: var(--spacing-xl) 0;
+    }
+
+    .cta-main {
+      padding: var(--spacing-lg) var(--spacing-xl);
+      font-size: 1.1rem;
+      border-radius: var(--border-radius);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .cta-time {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: var(--transition-normal);
+      text-decoration: none;
+      display: block;
+    }
+
+    .feature-card:active {
+      transform: scale(0.97);
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto var(--spacing-sm);
+      background: var(--bg-section);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .feature-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .feature-desc {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .trust-section {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-xl);
+      padding: var(--spacing-md) 0;
+    }
+
+    .trust-item {
+      text-align: center;
+    }
+
+    .trust-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .trust-label {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+      <!-- 히어로 섹션 - 안정 영역 -->
+      <section class="hero-section fade-in">
+        <div class="hero-icon">🦷</div>
+        <h1 class="hero-title">
+          치과 가기 전,<br>
+          내 상태부터 정리해볼까요?
+        </h1>
+        <p class="hero-subtitle">
+          부담 없이 천천히 알아보세요
+        </p>
+      </section>
+
+      <!-- 공감 섹션 -->
+      <section class="empathy-section fade-in delay-1">
+        <p class="empathy-text">
+          "이가 아픈데... 병원 가야 할까?"<br>
+          "이게 충치인지 잘 모르겠어"<br><br>
+          <strong>걱정되는 마음, 충분히 이해해요.</strong><br>
+          먼저 간단히 상태를 정리해보면<br>
+          마음이 조금 편해질 거예요.
+        </p>
+      </section>
+
+      <!-- 메인 CTA -->
+      <section class="cta-section fade-in delay-2">
+        <a href="diagnosis.html" class="btn btn-primary cta-main">
+          내 증상 정리해보기
+          <span class="cta-time">30초면 충분해요</span>
+        </a>
+      </section>
+
+      <!-- 기능 그리드 -->
+      <section class="feature-grid fade-in delay-3">
+        <a href="tooth-map.html" class="feature-card">
+          <div class="feature-icon">🗺️</div>
+          <div class="feature-title">치아 위치 선택</div>
+          <div class="feature-desc">아픈 치아 표시하기</div>
+        </a>
+
+        <a href="treatment-info.html" class="feature-card">
+          <div class="feature-icon">💡</div>
+          <div class="feature-title">치료 정보</div>
+          <div class="feature-desc">치료 과정 알아보기</div>
+        </a>
+
+        <a href="records.html" class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">방문 기록</div>
+          <div class="feature-desc">내 치과 기록 관리</div>
+        </a>
+
+        <a href="result.html" class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">이전 결과</div>
+          <div class="feature-desc" id="last-diagnosis-summary">최근 진단 보기</div>
+        </a>
+      </section>
+
+      <!-- 신뢰 지표 -->
+      <section class="trust-section fade-in delay-4">
+        <div class="trust-item">
+          <div class="trust-number">30초</div>
+          <div class="trust-label">소요 시간</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">5가지</div>
+          <div class="trust-label">질문</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">무료</div>
+          <div class="trust-label">이용 비용</div>
+        </div>
+      </section>
+
+      <!-- 안전장치 - 고지사항 -->
+      <div class="disclaimer fade-in delay-4">
+        <p class="disclaimer-text">
+          ⚠️ 본 서비스는 의료 진단이 아닙니다.<br>
+          증상 정리를 도와드리는 참고용 서비스이며,<br>
+          정확한 진단은 반드시 치과 전문의와 상담하세요.
+        </p>
+      </div>
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>홈</span>
+      </a>
+      <a href="diagnosis.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>증상체크</span>
+      </a>
+      <a href="tooth-map.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+        <span>치아맵</span>
+      </a>
+      <a href="records.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>기록</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // 메인 페이지 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      pageInit.main();
+    });
+  </script>
+</body>
+</html>

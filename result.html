@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F8FAFB">
+  <title>결과 확인 - 내 치아 상태 정리하기</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .result-header {
+      text-align: center;
+      padding: var(--spacing-xl) 0;
+    }
+
+    .result-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-lg);
+      font-size: 3rem;
+    }
+
+    .result-icon.low {
+      background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+    }
+
+    .result-icon.medium {
+      background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+    }
+
+    .result-icon.high {
+      background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+    }
+
+    .result-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .result-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .result-date {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-top: var(--spacing-sm);
+    }
+
+    /* 점수 표시 */
+    .score-section {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .score-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .score-visual {
+      display: flex;
+      gap: 6px;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .score-segment {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--bg-section);
+    }
+
+    .score-segment.filled.low {
+      background: #66BB6A;
+    }
+
+    .score-segment.filled.medium {
+      background: #FFA726;
+    }
+
+    .score-segment.filled.high {
+      background: #EF5350;
+    }
+
+    .score-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    /* 가능한 상태 */
+    .conditions-section {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .condition-item {
+      padding: var(--spacing-md);
+      background: var(--bg-section);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .condition-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .condition-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .condition-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 권장 행동 */
+    .recommendations-section {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .recommendation-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+      padding: var(--spacing-sm) 0;
+    }
+
+    .recommendation-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(74, 144, 164, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .recommendation-text {
+      flex: 1;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 버튼 영역 */
+    .action-section {
+      margin-top: var(--spacing-xl);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    /* 분석 완료 메시지 */
+    .analysis-note {
+      background: rgba(74, 144, 164, 0.08);
+      border-radius: var(--border-radius-sm);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .analysis-note p {
+      font-size: 0.9rem;
+      color: var(--primary);
+      line-height: 1.5;
+    }
+
+    /* 없는 결과 */
+    .no-result {
+      text-align: center;
+      padding: var(--spacing-xxl) var(--spacing-lg);
+    }
+
+    .no-result-icon {
+      font-size: 4rem;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .no-result h2 {
+      font-size: 1.2rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .no-result p {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 헤더 -->
+    <header class="header">
+      <button class="header-back" onclick="location.href='index.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <span class="header-title">결과 확인</span>
+      <div class="header-spacer"></div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content" id="mainContent">
+      <!-- 결과가 없는 경우 -->
+      <div class="no-result" id="noResult" style="display: none;">
+        <div class="no-result-icon">📋</div>
+        <h2>아직 결과가 없어요</h2>
+        <p>먼저 증상 체크를 진행해주세요</p>
+        <a href="diagnosis.html" class="btn btn-primary">증상 체크 시작하기</a>
+      </div>
+
+      <!-- 결과 표시 영역 -->
+      <div id="resultContent" style="display: none;">
+        <!-- 결과 헤더 -->
+        <section class="result-header fade-in">
+          <div class="result-icon" id="resultIcon">😊</div>
+          <h1 class="result-title" id="resultTitle">양호한 상태</h1>
+          <p class="result-subtitle" id="resultSubtitle">입력된 정보를 종합한 결과입니다</p>
+          <p class="result-date" id="resultDate"></p>
+        </section>
+
+        <!-- 분석 완료 메시지 -->
+        <div class="analysis-note fade-in delay-1">
+          <p>📊 입력하신 정보를 종합하여 분석했습니다</p>
+        </div>
+
+        <!-- 위험도 점수 -->
+        <section class="score-section fade-in delay-1">
+          <div class="score-label">증상 종합 점수</div>
+          <div class="score-visual" id="scoreVisual">
+            <!-- 동적 생성 -->
+          </div>
+          <div class="score-legend">
+            <span>양호</span>
+            <span>관찰 필요</span>
+            <span>방문 권장</span>
+          </div>
+        </section>
+
+        <!-- 가능한 상태 -->
+        <section class="conditions-section fade-in delay-2">
+          <h3 class="section-title">🔍 가능한 상태</h3>
+          <div id="conditionsList">
+            <!-- 동적 생성 -->
+          </div>
+        </section>
+
+        <!-- 권장 행동 -->
+        <section class="recommendations-section fade-in delay-3">
+          <h3 class="section-title">✅ 권장 행동</h3>
+          <div id="recommendationsList">
+            <!-- 동적 생성 -->
+          </div>
+        </section>
+
+        <!-- 액션 버튼 -->
+        <section class="action-section fade-in delay-4">
+          <div class="btn-group">
+            <a href="tooth-map.html" class="btn btn-soft">
+              🗺️ 치아 위치도 기록하기
+            </a>
+            <a href="treatment-info.html" class="btn btn-secondary">
+              💡 치료 정보 알아보기
+            </a>
+            <a href="diagnosis.html" class="btn btn-outline">
+              다시 체크하기
+            </a>
+          </div>
+        </section>
+
+        <!-- 고지사항 -->
+        <div class="disclaimer fade-in delay-4">
+          <p class="disclaimer-text">
+            ⚠️ 본 결과는 의료 진단이 아닙니다.<br>
+            입력된 정보를 기반으로 한 참고용 안내이며,<br>
+            정확한 진단은 반드시 치과 전문의와 상담하세요.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>홈</span>
+      </a>
+      <a href="diagnosis.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>증상체크</span>
+      </a>
+      <a href="tooth-map.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+        <span>치아맵</span>
+      </a>
+      <a href="records.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>기록</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // 페이지 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      const diagnosisData = utils.loadData(STORAGE_KEYS.CURRENT_DIAGNOSIS);
+
+      if (!diagnosisData || !diagnosisData.result) {
+        document.getElementById('noResult').style.display = 'block';
+        document.getElementById('resultContent').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('noResult').style.display = 'none';
+      document.getElementById('resultContent').style.display = 'block';
+
+      const { result, date } = diagnosisData;
+      renderResult(result, date);
+    });
+
+    function renderResult(result, date) {
+      // 결과 아이콘 및 제목
+      const iconEl = document.getElementById('resultIcon');
+      const titleEl = document.getElementById('resultTitle');
+      const dateEl = document.getElementById('resultDate');
+
+      const icons = {
+        low: '😊',
+        medium: '😐',
+        high: '😟'
+      };
+
+      iconEl.textContent = icons[result.riskLevel];
+      iconEl.className = `result-icon ${result.riskLevel}`;
+      titleEl.textContent = result.riskText;
+      dateEl.textContent = `체크 일시: ${utils.formatDate(date)}`;
+
+      // 점수 시각화
+      const scoreVisual = document.getElementById('scoreVisual');
+      const maxScore = 15;
+      const segments = 10;
+      const filledSegments = Math.min(Math.ceil((result.score / maxScore) * segments), segments);
+
+      scoreVisual.innerHTML = Array(segments).fill(0).map((_, i) => {
+        const isFilled = i < filledSegments;
+        return `<div class="score-segment ${isFilled ? 'filled ' + result.riskLevel : ''}"></div>`;
+      }).join('');
+
+      // 가능한 상태
+      const conditionsList = document.getElementById('conditionsList');
+      conditionsList.innerHTML = result.possibleConditions.map(cond => `
+        <div class="condition-item">
+          <div class="condition-name">${cond.name}</div>
+          <div class="condition-desc">${cond.description}</div>
+        </div>
+      `).join('');
+
+      // 권장 행동
+      const recommendationsList = document.getElementById('recommendationsList');
+      const recIcons = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
+      recommendationsList.innerHTML = result.recommendations.map((rec, i) => `
+        <div class="recommendation-item">
+          <div class="recommendation-icon">${recIcons[i] || '✓'}</div>
+          <div class="recommendation-text">${rec}</div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
