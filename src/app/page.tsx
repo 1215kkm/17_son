@@ -1,127 +1,239 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/ui';
 import { Icon } from '@/components/ui/Icon';
+import { STORAGE_KEYS } from '@/lib/constants';
+
+interface VisitRecord {
+  id: string;
+  date: string;
+  clinic: string;
+  treatment: string;
+  memo: string;
+}
 
 export default function HomePage() {
+  const [daysSinceVisit, setDaysSinceVisit] = useState<number | null>(null);
+  const [showReminder, setShowReminder] = useState(true);
+
+  useEffect(() => {
+    const recordsData = localStorage.getItem(STORAGE_KEYS.RECORDS);
+    if (recordsData) {
+      const records: VisitRecord[] = JSON.parse(recordsData);
+      if (records.length > 0) {
+        const sortedRecords = records.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        const lastVisit = new Date(sortedRecords[0].date);
+        const today = new Date();
+        const diffTime = Math.abs(today.getTime() - lastVisit.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        setDaysSinceVisit(diffDays);
+      }
+    }
+  }, []);
+
+  const treatments = [
+    { id: 'scaling', name: '스케일링', color: '#E8F5E9', emoji: '🦷' },
+    { id: 'resin', name: '레진', color: '#E3F2FD', emoji: '✨' },
+    { id: 'inlay', name: '인레이', color: '#FFF3E0', emoji: '🔶' },
+    { id: 'nerve', name: '신경치료', color: '#FCE4EC', emoji: '💉' },
+    { id: 'crown', name: '크라운', color: '#F3E5F5', emoji: '👑' },
+  ];
+
+  const magazines = [
+    {
+      id: 1,
+      title: '임플란트 골이식 재료, 어떻게 선택할까?',
+      image: '🦴',
+      tag: '치과상식',
+    },
+    {
+      id: 2,
+      title: '임플란트도 건강보험이 가능하다고?',
+      image: '💰',
+      tag: '보험정보',
+    },
+    {
+      id: 3,
+      title: '치아 관리법, 전문의가 알려드려요',
+      image: '🪥',
+      tag: '치과상식',
+    },
+  ];
+
   return (
-    <main className="main-content main-content-no-header">
-      {/* 히어로 섹션 */}
-      <section className="text-center pt-4 pb-6 animate-fade-in">
-        {/* 캐릭터 일러스트 영역 */}
-        <div className="w-[200px] h-[160px] mx-auto mb-4 bg-[var(--color-primary-50)] rounded-[20px] flex items-center justify-center">
-          <span className="text-6xl">🦷</span>
+    <div className="min-h-screen bg-white">
+      {/* 상단 헤더 */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white">
+        <div className="flex items-center justify-between px-5 h-14">
+          <span className="text-lg font-bold tracking-tight">DENTAL GUIDE</span>
+          <div className="flex items-center gap-4">
+            <button className="relative">
+              <Icon name="bell" size={24} color="#1A1A1A" />
+            </button>
+            <button>
+              <Icon name="user" size={24} color="#1A1A1A" />
+            </button>
+          </div>
         </div>
+      </header>
 
-        <h1 className="text-[var(--text-2xl)] font-bold text-[var(--foreground)] leading-tight">
-          치과 가기 전,<br />
-          내 상태부터 정리해볼까요?
-        </h1>
-        <p className="text-[var(--text-base)] text-[var(--foreground-secondary)] mt-2">
-          부담 없이 천천히 알아보세요
-        </p>
-      </section>
+      <main className="pt-14 pb-24">
+        {/* 히어로 섹션 - 파란색 그라데이션 */}
+        <section className="relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #5B9BD5 0%, #7BC8E8 50%, #A8E0D1 100%)',
+          minHeight: '240px'
+        }}>
+          <div className="px-5 py-8 relative z-10">
+            <p className="text-white/80 text-sm mb-1">지금 치과 가야 할까?</p>
+            <h1 className="text-white text-xl font-bold leading-tight">
+              내 증상에 딱 맞는<br />
+              맞춤형 가이드
+            </h1>
+            <Link
+              href="/diagnosis"
+              className="inline-flex items-center gap-1 mt-6 px-4 py-2.5 bg-white rounded-full text-sm font-medium text-gray-800"
+            >
+              내 증상 확인하기
+              <Icon name="arrow-right" size={16} />
+            </Link>
+          </div>
 
-      {/* 메인 CTA - 증상확인 테스트 */}
-      <section className="animate-fade-in stagger-1">
-        <Link href="/diagnosis">
-          <Card
-            className="!p-5 bg-gradient-to-r from-[var(--color-primary-400)] to-[var(--color-primary-300)] border-none"
-            clickable
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-[var(--text-lg)] font-semibold text-white">
-                  증상 확인 테스트
-                </h2>
-                <p className="text-[var(--text-sm)] text-white/80 mt-1">
-                  30초만에 내 상태 정리하기
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <Icon name="chevron-right" size={24} color="white" />
-              </div>
+          {/* 일러스트 영역 (플레이스홀더) */}
+          <div className="absolute right-0 bottom-0 w-48 h-48 flex items-end justify-end pr-4 pb-4">
+            <div className="w-36 h-44 bg-white/20 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+              <span className="text-6xl">📱</span>
             </div>
-          </Card>
-        </Link>
-      </section>
+          </div>
+        </section>
 
-      {/* 기능 카드 그리드 */}
-      <section className="mt-5 animate-fade-in stagger-2">
-        <div className="grid grid-cols-2 gap-3">
-          {/* 치과 방문 기록 */}
-          <Link href="/records">
-            <Card clickable className="h-full">
-              <div className="w-10 h-10 bg-[var(--color-primary-50)] rounded-[10px] flex items-center justify-center mb-3">
-                <Icon name="calendar" size={20} color="var(--color-primary-400)" />
+        {/* 최근 방문치과 카드 */}
+        <section className="px-5 -mt-4 relative z-20">
+          <Link href="/records" className="block bg-white rounded-2xl shadow-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-xl">🏥</span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">최근 방문치과</p>
+                  <p className="text-2xl font-bold">
+                    {daysSinceVisit !== null ? (
+                      <>{daysSinceVisit}<span className="text-base font-normal text-gray-500 ml-1">일 경과</span></>
+                    ) : (
+                      <span className="text-base font-normal text-gray-400">기록 없음</span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <h3 className="text-[var(--text-base)] font-semibold text-[var(--foreground)]">
-                치과 방문 기록
-              </h3>
-              <p className="text-[var(--text-sm)] text-[var(--foreground-secondary)] mt-1">
-                내 진료 기록 관리
-              </p>
-            </Card>
+              <Icon name="chevron-right" size={24} color="#9CA3AF" />
+            </div>
           </Link>
+        </section>
 
-          {/* 치료 정보 */}
-          <Link href="/treatment">
-            <Card clickable className="h-full">
-              <div className="w-10 h-10 bg-[var(--color-primary-50)] rounded-[10px] flex items-center justify-center mb-3">
-                <Icon name="file-text" size={20} color="var(--color-primary-400)" />
+        {/* 치료 정보 섹션 */}
+        <section className="mt-8 px-5">
+          <h2 className="text-lg font-bold mb-4">치료 정보</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
+            {treatments.map((treatment) => (
+              <Link
+                key={treatment.id}
+                href={`/treatment?tab=${treatment.id}`}
+                className="flex-shrink-0 w-20"
+              >
+                <div
+                  className="w-20 h-20 rounded-2xl flex items-center justify-center mb-2"
+                  style={{ backgroundColor: treatment.color }}
+                >
+                  <span className="text-3xl">{treatment.emoji}</span>
+                </div>
+                <p className="text-center text-sm">{treatment.name}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* 매거진 섹션 */}
+        <section className="mt-8 px-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold">매거진</h2>
+            <button className="text-sm text-gray-400">더보기</button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
+            {magazines.map((magazine) => (
+              <div
+                key={magazine.id}
+                className="flex-shrink-0 w-40 bg-gray-50 rounded-2xl overflow-hidden"
+              >
+                <div className="h-24 bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
+                  <span className="text-4xl">{magazine.image}</span>
+                </div>
+                <div className="p-3">
+                  <span className="text-xs text-blue-500 font-medium">{magazine.tag}</span>
+                  <p className="text-sm font-medium mt-1 line-clamp-2">{magazine.title}</p>
+                </div>
               </div>
-              <h3 className="text-[var(--text-base)] font-semibold text-[var(--foreground)]">
-                치료 정보
-              </h3>
-              <p className="text-[var(--text-sm)] text-[var(--foreground-secondary)] mt-1">
-                치료 과정 알아보기
-              </p>
-            </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* 빠른 메뉴 */}
+        <section className="mt-8 px-5">
+          <h2 className="text-lg font-bold mb-4">빠른 메뉴</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Link href="/tooth-map" className="bg-gray-50 rounded-xl p-4">
+              <div className="w-10 h-10 bg-[#4AC8B0]/10 rounded-xl flex items-center justify-center mb-3">
+                <Icon name="map-pin" size={20} color="#4AC8B0" />
+              </div>
+              <p className="font-medium">치아 위치 선택</p>
+              <p className="text-sm text-gray-400 mt-0.5">아픈 치아 표시하기</p>
+            </Link>
+            <Link href="/diagnosis/result" className="bg-gray-50 rounded-xl p-4">
+              <div className="w-10 h-10 bg-[#4AC8B0]/10 rounded-xl flex items-center justify-center mb-3">
+                <Icon name="check-circle" size={20} color="#4AC8B0" />
+              </div>
+              <p className="font-medium">이전 결과</p>
+              <p className="text-sm text-gray-400 mt-0.5">최근 진단 결과 보기</p>
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      {/* 하단 알림 바 */}
+      {showReminder && (
+        <div className="fixed bottom-20 left-4 right-4 bg-[#4AC8B0] text-white rounded-xl px-4 py-3 flex items-center justify-between shadow-lg z-40">
+          <p className="text-sm">7일 뒤, 예약한 치과 일정이 있습니다</p>
+          <button onClick={() => setShowReminder(false)} className="ml-2">
+            <Icon name="x" size={18} color="white" />
+          </button>
+        </div>
+      )}
+
+      {/* 하단 탭바 */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50">
+        <div className="flex items-center justify-around h-16">
+          <Link href="/" className="flex flex-col items-center gap-1 text-[#4AC8B0]">
+            <Icon name="home" size={24} color="#4AC8B0" />
+            <span className="text-xs">홈</span>
           </Link>
-
-          {/* 치아 맵 */}
-          <Link href="/tooth-map">
-            <Card clickable className="h-full">
-              <div className="w-10 h-10 bg-[var(--color-primary-50)] rounded-[10px] flex items-center justify-center mb-3">
-                <Icon name="map-pin" size={20} color="var(--color-primary-400)" />
-              </div>
-              <h3 className="text-[var(--text-base)] font-semibold text-[var(--foreground)]">
-                치아 위치 선택
-              </h3>
-              <p className="text-[var(--text-sm)] text-[var(--foreground-secondary)] mt-1">
-                아픈 치아 표시하기
-              </p>
-            </Card>
+          <Link href="/search" className="flex flex-col items-center gap-1 text-gray-400">
+            <Icon name="search" size={24} color="#9CA3AF" />
+            <span className="text-xs">치과검색</span>
           </Link>
-
-          {/* 이전 결과 */}
-          <Link href="/diagnosis/result">
-            <Card clickable className="h-full">
-              <div className="w-10 h-10 bg-[var(--color-primary-50)] rounded-[10px] flex items-center justify-center mb-3">
-                <Icon name="check-circle" size={20} color="var(--color-primary-400)" />
-              </div>
-              <h3 className="text-[var(--text-base)] font-semibold text-[var(--foreground)]">
-                이전 결과
-              </h3>
-              <p className="text-[var(--text-sm)] text-[var(--foreground-secondary)] mt-1">
-                최근 진단 결과 보기
-              </p>
-            </Card>
+          <Link href="/diagnosis" className="flex flex-col items-center gap-1 text-gray-400">
+            <Icon name="file-text" size={24} color="#9CA3AF" />
+            <span className="text-xs">증상기록</span>
+          </Link>
+          <Link href="/community" className="flex flex-col items-center gap-1 text-gray-400">
+            <Icon name="users" size={24} color="#9CA3AF" />
+            <span className="text-xs">커뮤니티</span>
           </Link>
         </div>
-      </section>
-
-      {/* 고지사항 */}
-      <section className="mt-6 animate-fade-in stagger-3">
-        <div className="bg-[var(--color-gray-100)] rounded-[var(--radius-md)] p-4">
-          <p className="text-[var(--text-sm)] text-[var(--foreground-tertiary)] text-center leading-relaxed">
-            ⚠️ 본 서비스는 의료 진단이 아닙니다.<br />
-            증상 정리를 도와드리는 참고용 서비스이며,<br />
-            정확한 진단은 반드시 치과 전문의와 상담하세요.
-          </p>
-        </div>
-      </section>
-    </main>
+        {/* iOS 홈 인디케이터 영역 */}
+        <div className="h-5 bg-white" />
+      </nav>
+    </div>
   );
 }
