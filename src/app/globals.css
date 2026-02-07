@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+/* ===== 치과 자가진단 앱 - 디자인 시스템 ===== */
+
+/* Pretendard 폰트 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+:root {
+  /* ===== 색상 시스템 (이미지 기반) ===== */
+
+  /* Primary - 민트/청록 */
+  --color-primary-50: #E6F7F4;
+  --color-primary-100: #B3E8E0;
+  --color-primary-200: #80D9CC;
+  --color-primary-300: #4DCAB8;
+  --color-primary-400: #4AC8B0;
+  --color-primary-500: #3DB9A2;
+  --color-primary-600: #30A08C;
+  --color-primary-700: #238776;
+
+  /* Gray */
+  --color-gray-50: #F5F7FA;
+  --color-gray-100: #E5E7EB;
+  --color-gray-200: #D1D5DB;
+  --color-gray-300: #9CA3AF;
+  --color-gray-400: #6B7280;
+  --color-gray-500: #4B5563;
+  --color-gray-600: #374151;
+  --color-gray-900: #1A1A1A;
+
+  /* Semantic Colors */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Background */
+  --background: #F5F7FA;
+  --background-card: #FFFFFF;
+  --foreground: #1A1A1A;
+  --foreground-secondary: #6B7280;
+  --foreground-tertiary: #9CA3AF;
+
+  /* ===== 간격 시스템 ===== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+
+  /* ===== 크기 시스템 ===== */
+  --header-height: 56px;
+  --tabbar-height: 60px;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* ===== Border Radius ===== */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* ===== Shadow ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* ===== Typography ===== */
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 20px;
+  --text-3xl: 24px;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+}
+
+/* Tailwind v4 Theme */
+@theme inline {
+  --color-primary: var(--color-primary-400);
+  --color-primary-dark: var(--color-primary-500);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-family-sans: var(--font-sans);
+}
+
+/* ===== Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--line-height-normal);
+  color: var(--foreground);
+  background-color: var(--background);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 모바일 컨테이너 ===== */
+.app-container {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--background);
+  position: relative;
+}
+
+/* ===== 메인 콘텐츠 영역 ===== */
+.main-content {
+  padding: var(--spacing-xl);
+  padding-top: calc(var(--header-height) + var(--spacing-lg));
+  padding-bottom: calc(var(--tabbar-height) + var(--safe-area-bottom) + var(--spacing-xl));
+  min-height: 100vh;
+}
+
+.main-content-no-header {
+  padding-top: var(--spacing-xl);
+}
+
+.main-content-no-tabbar {
+  padding-bottom: var(--spacing-xl);
+}
+
+/* ===== 유틸리티 클래스 ===== */
+
+/* Text Colors */
+.text-primary { color: var(--color-primary-400); }
+.text-secondary { color: var(--foreground-secondary); }
+.text-tertiary { color: var(--foreground-tertiary); }
+
+/* Background Colors */
+.bg-primary { background-color: var(--color-primary-400); }
+.bg-card { background-color: var(--background-card); }
+.bg-page { background-color: var(--background); }
+
+/* Font Sizes */
+.text-title-lg { font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+.text-title-md { font-size: var(--text-lg); font-weight: var(--font-semibold); }
+.text-title-sm { font-size: var(--text-base); font-weight: var(--font-semibold); }
+.text-body { font-size: var(--text-base); font-weight: var(--font-normal); }
+.text-caption { font-size: var(--text-sm); font-weight: var(--font-normal); }
+
+/* Border Radius */
+.rounded-card { border-radius: var(--radius-md); }
+.rounded-button { border-radius: var(--radius-xl); }
+.rounded-tag { border-radius: var(--radius-full); }
+
+/* Shadow */
+.shadow-card { box-shadow: var(--shadow-card); }
+
+/* ===== 애니메이션 ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Stagger Animation */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* ===== Scrollbar 숨김 (모바일 UX) ===== */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== Safe Area ===== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
